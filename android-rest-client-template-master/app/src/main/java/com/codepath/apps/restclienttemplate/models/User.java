@@ -19,7 +19,8 @@ public class User {
         user.name = json.getString("name");
         user.uid = json.getLong("id");
         user.screenName = json.getString("screen_name");
-        user.profileImageUrl = json.getString("profile_image_url");
+        //android handles https requests, not http
+        user.profileImageUrl = json.getString("profile_image_url_https");
 
         return user;
     }
