@@ -1,10 +1,14 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.utils.TweetAdapter;
@@ -25,12 +29,17 @@ public class TimelineActivity extends AppCompatActivity {
     private ArrayList<Tweet> tweets;
     private RecyclerView rvTweets;
 
+    Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
 
         client = TwitterApp.getRestClient(this);
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         //find the RecyclerView
         rvTweets = (RecyclerView) findViewById(R.id.rvTweet);
@@ -47,7 +56,24 @@ public class TimelineActivity extends AppCompatActivity {
         //set the adapter
         rvTweets.setAdapter(tweetAdapter);
 
+
+
         populateTimeline();
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater mMenuInflater = getMenuInflater();
+
+        mMenuInflater.inflate(R.menu.menu_timeline, menu);
+        return true;
+    }
+
+    private void composeMessage() {
+        Intent composeTweet = new Intent(TimelineActivity.this, ComposeActivity.class);
+        startActivityForResult(composeTweet, 123);
     }
 
 
