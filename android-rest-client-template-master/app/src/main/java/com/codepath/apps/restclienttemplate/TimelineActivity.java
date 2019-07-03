@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -84,6 +86,18 @@ public class TimelineActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        //Checking the request code and result code
+        if(resultCode == RESULT_OK && requestCode == 123) {
+            Tweet tweet = (Tweet) Parcels.unwrap(getIntent().getParcelableExtra("newTweet"));
+
+            tweets.add(0, tweet);
+            tweetAdapter.notifyItemInserted(0);
+            rvTweets.scrollToPosition(0);
+        }
     }
 
     private void composeMessage() {

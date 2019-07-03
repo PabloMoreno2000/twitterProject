@@ -3,6 +3,7 @@ package com.codepath.apps.restclienttemplate.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 public class Tweet {
 
     //attributes
