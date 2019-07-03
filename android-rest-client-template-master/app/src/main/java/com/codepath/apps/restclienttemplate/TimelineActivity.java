@@ -2,6 +2,7 @@ package com.codepath.apps.restclienttemplate;
 
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.apps.restclienttemplate.utils.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.restclienttemplate.utils.TweetAdapter;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -32,7 +34,10 @@ public class TimelineActivity extends AppCompatActivity {
     private ArrayList<Tweet> tweets;
     private RecyclerView rvTweets;
 
-    Toolbar mToolbar;
+    private Toolbar mToolbar;
+    private SwipeRefreshLayout swipeContainer;
+
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,8 @@ public class TimelineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timeline);
 
         client = TwitterApp.getRestClient(this);
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -53,15 +60,45 @@ public class TimelineActivity extends AppCompatActivity {
         //construct the adapter from this arraylist
         tweetAdapter = new TweetAdapter(tweets);
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+
         //Recyclerview setup(layout manager, use adapter)
-        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+        rvTweets.setLayoutManager(linearLayoutManager);
 
         //set the adapter
         rvTweets.setAdapter(tweetAdapter);
 
-
-
         populateTimeline();
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchTimelineAsync(0);
+            }
+        });
+
+        //Configure refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                //Triggered only when new data needs to be appended to the list
+                //Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+
+        //add the scroll listener to RecyclerView
+        rvTweets.addOnScrollListener(scrollListener);
+
+    }
+
+    public void loadNextDataFromApi(int page) {
 
     }
 
@@ -105,6 +142,81 @@ public class TimelineActivity extends AppCompatActivity {
         startActivityForResult(composeTweet, 123);
     }
 
+    public void fetchTimelineAsync(int page) {
+        //Send request to fetch data
+        //client here is an instance of Android Async HTTP
+        //getHomeTimeline is an example endpoint
+        client.getHomeTimeline(new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                //clean the adapter
+                tweetAdapter.clear();
+
+                //put the new items
+                //iterate through the JSON array
+                for(int i = 0; i < response.length(); i++) {
+                    //for each entry, deserialize the JSON object
+                    //Convert each object to a tweet model
+                    //add that Tweet model to our data source(array list)
+                    //notify the adapter we have added an item
+
+                    Tweet tweet = null;
+                    try {
+                        tweet = Tweet.fromJSON(response.getJSONObject(i));
+                        tweets.add(tweet);
+                        tweetAdapter.notifyItemInserted(tweets.size() - 1);
+
+                        Log.i("Refresh", "Added element " + i);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                //Now we signal that the refresh has finished
+                swipeContainer.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+
+            public void onSuccess(JSONArray json) {
+
+            }
+
+            public void onFailure(Throwable e) {
+                Log.d("DEBUG", "Fetch timeline error :" + e.toString());
+            }
+        });
+    }
+
+
+    private void getCurrentUserInfo() {
+        client.getUserInfo(123, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+    }
 
     private void populateTimeline() {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
