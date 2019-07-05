@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -40,6 +41,8 @@ public class TimelineActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeContainer;
 
     private EndlessRecyclerViewScrollListener scrollListener;
+
+    private long maxId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +90,10 @@ public class TimelineActivity extends AppCompatActivity {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvTweets.getContext(),
+                linearLayoutManager.getOrientation());
+        rvTweets.addItemDecoration(dividerItemDecoration);
+
 
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
@@ -109,7 +116,16 @@ public class TimelineActivity extends AppCompatActivity {
 
     }
 
-    public void loadNextDataFromApi(int page) {
+    public void loadNextDataFromApi(int offset) {
+
+        //get id of the last tweet
+        maxId = tweets.get(tweets.size() - 1).uid;
+        populateTimeline(maxId);
+        // Send an API request to retrieve appropriate paginated data
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
+        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
 
     }
 
@@ -233,11 +249,11 @@ public class TimelineActivity extends AppCompatActivity {
         });
     }*/
 
-    private void populateTimeline() {
+    private void populateTimeline(long maxId) {
 
         showProgressBar();
 
-        client.getHomeTimeline(new JsonHttpResponseHandler() {
+        client.getHomeTimeline(maxId, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -304,7 +320,7 @@ public class TimelineActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         // Store instance of the menu item containing progress
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        populateTimeline();
+        populateTimeline(maxId);
         // Return to finish
         return super.onPrepareOptionsMenu(menu);
     }

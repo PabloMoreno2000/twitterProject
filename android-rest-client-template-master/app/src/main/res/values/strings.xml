@@ -7,6 +7,6 @@
     <string name="intent_host">cprest</string>
 
     <string name="inputHint">What is happening?</string>
-    <string name="btnSend">Send</string>
+    <string name="btnSend">Tweet</string>
 
 </resources>
