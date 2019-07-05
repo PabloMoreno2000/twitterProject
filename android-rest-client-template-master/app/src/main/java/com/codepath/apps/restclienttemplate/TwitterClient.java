@@ -70,15 +70,23 @@ public class TwitterClient extends OAuthBaseClient {
 		client.post(apiUrl, params, handler);
 	}
 //https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-show.html
-	public void getUserInfo(int id, AsyncHttpResponseHandler handler) {
+	public void getCurrentUserObject(String screen, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("users/show.json");
 
 		RequestParams params = new RequestParams();
-		params.put("user_id", id);
+		params.put("screen_name", screen );
 
 		client.get(apiUrl, params, handler);
 	}
 
+	//https://developer.twitter.com/en/docs/ads/campaign-management/api-reference/authenticated-user-access.html
+	public void getCurrentUserData(AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("accounts/:account_id/authenticated_user_access.json");
+		RequestParams params = new RequestParams();
+
+		client.get(apiUrl, params, handler);
+
+	}
 
 
 	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint

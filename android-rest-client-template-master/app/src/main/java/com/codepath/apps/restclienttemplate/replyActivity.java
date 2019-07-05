@@ -22,8 +22,7 @@ import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ComposeActivity extends AppCompatActivity {
-
+public class replyActivity extends AppCompatActivity {
     private Button bSend;
     private EditText etTweet;
 
@@ -34,7 +33,7 @@ public class ComposeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_compose);
+        setContentView(R.layout.activity_reply);
 
         bSend = (Button) findViewById(R.id.btnSend);
         ivProfile = (ImageView) findViewById(R.id.ivUser);
@@ -42,11 +41,11 @@ public class ComposeActivity extends AppCompatActivity {
         client = TwitterApp.getRestClient(this);
 
         setListeners();
-/**
-        Glide.with(ComposeActivity.this)
-                .load(getDrawable(R.drawable.profile))
+
+        Glide.with(replyActivity.this)
+                .load(R.string.user_image)
                 .into(ivProfile);
-*/
+
 
 
     }
@@ -97,13 +96,13 @@ public class ComposeActivity extends AppCompatActivity {
 
                 //if it is not empty
                 if(! message.equals("")) {
-                    Toast.makeText(ComposeActivity.this, "Tweet posted!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(replyActivity.this, "Tweet posted!", Toast.LENGTH_LONG).show();
                     sendTweet();
                 }
 
                 //if it is empty
                 else {
-                    Toast.makeText(ComposeActivity.this, "Please write a tweet", Toast.LENGTH_LONG).show();
+                    Toast.makeText(replyActivity.this, "Please write a tweet", Toast.LENGTH_LONG).show();
 
                 }
             }

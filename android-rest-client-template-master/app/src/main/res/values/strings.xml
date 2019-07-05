@@ -6,7 +6,7 @@
     <string name="intent_scheme">oauth</string>
     <string name="intent_host">cprest</string>
 
-    <string name = "inputHint">What is happening?</string>
+    <string name="inputHint">What is happening?</string>
     <string name="btnSend">Send</string>
 
 </resources>
