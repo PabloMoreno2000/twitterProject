@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -42,12 +43,13 @@ public class ComposeActivity extends AppCompatActivity {
         client = TwitterApp.getRestClient(this);
 
         setListeners();
-/**
-        Glide.with(ComposeActivity.this)
-                .load(getDrawable(R.drawable.profile))
-                .into(ivProfile);
-*/
 
+
+        Glide.with(this)
+                .load(getResources().getIdentifier("profile", "drawable", this.getPackageName()))
+                //.bitmapTransform(new RoundedCornersTransformation(this, 25, 0))
+                .apply(RequestOptions.circleCropTransform())
+                .into(ivProfile);
 
     }
 
