@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
@@ -54,9 +55,16 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder>{
         viewHolder.tvUsername.setText(tweet.user.name);
         viewHolder.tvBody.setText(tweet.body);
         viewHolder.tvTime.setText(getRelativeTimeAgo(tweet.createdAt));
+/**
+        Glide.with(context)
+                .load(tweet.user.profileImageUrl)
+                .into(viewHolder.ivProfileImage);
+        **/
 
         Glide.with(context)
                 .load(tweet.user.profileImageUrl)
+                //.bitmapTransform(new RoundedCornersTransformation(this, 25, 0))
+                .apply(RequestOptions.circleCropTransform())
                 .into(viewHolder.ivProfileImage);
     }
 
