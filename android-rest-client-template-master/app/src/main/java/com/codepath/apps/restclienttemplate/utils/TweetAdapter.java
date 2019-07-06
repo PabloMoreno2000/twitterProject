@@ -66,6 +66,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder>{
                 //.bitmapTransform(new RoundedCornersTransformation(this, 25, 0))
                 .apply(RequestOptions.circleCropTransform())
                 .into(viewHolder.ivProfileImage);
+
+
+        if(tweet.hasEntitites) {
+            String entityUrl = tweet.entity.loadUrl;
+            viewHolder.ivMedia.setVisibility(View.VISIBLE);
+            Glide.with(context).load(entityUrl).into(viewHolder.ivMedia);
+        }
+
+        else {
+            viewHolder.ivMedia.setVisibility(View.GONE);
+        }
     }
 
     //crete viewholder class
@@ -74,6 +85,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder>{
         public TextView tvUsername;
         public TextView tvBody;
         public TextView tvTime;
+        public ImageView ivMedia;
 
 
         public ViewHolder(View itemView) {
@@ -86,6 +98,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder>{
             tvBody = itemView.findViewById(R.id.tvBody);
 
             tvTime = itemView.findViewById(R.id.tvTime);
+
+            ivMedia = itemView.findViewById(R.id.entitiy_tweet);
         }
 
 
