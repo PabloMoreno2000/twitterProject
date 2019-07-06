@@ -27,6 +27,8 @@ public class TwitterClient extends OAuthBaseClient {
 	public static String REST_CONSUMER_KEY;       // Change this
 	public static String REST_CONSUMER_SECRET ; // Change this
 
+
+
 	// Landing page to indicate the OAuth flow worked in case Chrome for Android 25+ blocks navigation back to the app.
 	public static final String FALLBACK_URL = "https://codepath.github.io/android-rest-client-template/success.html";
 
